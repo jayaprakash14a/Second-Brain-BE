@@ -5,10 +5,13 @@ import { ContentModel, LinkModel, UserModel } from './db';
 import { JWT_PASSWORD } from './config';
 import { userMiddleware } from './middleware';
 import { random } from './utils';
+import cors from "cors"
 
 
 const app = express();
 app.use(express.json());
+app.use(cors());
+
 
 
 app.post('/api/v1/signup', async (req, res) => {
@@ -16,13 +19,21 @@ app.post('/api/v1/signup', async (req, res) => {
     const username = req.body.username;
     const password = req.body.password;
     try {
-        await UserModel.create({
+        const response = await UserModel.create({
             username: username,
             password: password
 
         })
+        const existingUser = await UserModel.findOne({
+            username,
+            password
+        })
+        const token = existingUser && jwt.sign({
+            id: existingUser._id,
+        }, JWT_PASSWORD)
+
         res.json({
-            message: "User signed up"
+            token
         })
     } catch (e) {
         res.status(411).json({
@@ -84,15 +95,20 @@ app.get('/api/v1/content', userMiddleware, async (req, res) => {
         userId: userId
     }).populate("userId", "username")
 
+    const user = await UserModel.findOne({
+        _id: userId
+    })
+
     res.json({
+        username: user?.username,
         content
     })
 })
 
-app.delete('/api/v1/content', userMiddleware, async (req, res) => {
-    const contentId = req.body.contentId;
+app.delete('/api/v1/content/:contentid', userMiddleware, async (req, res) => {
+    const contentId = req.params.contentId;
 
-    await ContentModel.deleteMany({
+    await ContentModel.deleteOne({
         contentId,
         userId: req.userId
     })
@@ -181,4 +197,4 @@ app.get('/api/v1/brain/:sharelink', async (req, res) => {
 
 })
 
-app.listen(3000);
+app.listen(3001);
