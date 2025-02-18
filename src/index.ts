@@ -121,11 +121,11 @@ app.get('/api/v1/content', userMiddleware, async (req, res) => {
     })
 })
 
-app.delete('/api/v1/content/:contentid', userMiddleware, async (req, res) => {
-    const contentId = req.params.contentId;
+app.delete('/api/v1/content/:contentId', userMiddleware, async (req, res) => {
+    const _id = req.params.contentId;
 
     await ContentModel.deleteOne({
-        contentId,
+        _id,
         userId: req.userId
     })
 
