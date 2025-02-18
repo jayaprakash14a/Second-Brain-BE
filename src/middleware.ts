@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from "express";
-import { JWT_PASSWORD } from "./config";
 import jwt from "jsonwebtoken";
+
+require('dotenv').config();
 
 declare global{
     namespace Express{
@@ -9,6 +10,7 @@ declare global{
         }
     }
 }
+const JWT_PASSWORD = process.env.JWT_PASSWORD || '';
 
 export const userMiddleware = (req: Request, res : Response, next: NextFunction)=>{
     const header = req.headers["authorization"];

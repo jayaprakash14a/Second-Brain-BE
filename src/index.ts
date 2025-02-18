@@ -2,16 +2,32 @@ import express from 'express';
 import mongoose from 'mongoose';
 import jwt from 'jsonwebtoken';
 import { ContentModel, LinkModel, UserModel } from './db';
-import { JWT_PASSWORD } from './config';
 import { userMiddleware } from './middleware';
 import { random } from './utils';
 import cors from "cors"
 
+require('dotenv').config();
 
 const app = express();
 app.use(express.json());
-app.use(cors());
 
+
+const allowedOrigins = [
+    "https://your-react-app.vercel.app"
+    ]
+
+app.use(cors({ origin: (origin, callback)=>{
+    if (!origin) return callback(null, true);
+
+    if(allowedOrigins.includes(origin)){
+        callback(null, true);
+    }else{
+        callback(new Error("Not allowed by CORS"));
+    }
+}  
+}));
+
+const JWT_PASSWORD = process.env.JWT_PASSWORD || '';
 
 
 app.post('/api/v1/signup', async (req, res) => {
