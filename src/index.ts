@@ -13,9 +13,7 @@ app.use(express.json());
 
 const PORT = process.env.PORT || 3001;
 
-const allowedOrigins = [
-    "https://your-react-app.vercel.app"
-    ]
+const allowedOrigins = process.env.ALLOWED_ORIGINS?.split(",") || [];
 
 app.use(cors({ origin: (origin, callback)=>{
     if (!origin) return callback(null, true);
