@@ -11,6 +11,7 @@ require('dotenv').config();
 const app = express();
 app.use(express.json());
 
+const PORT = process.env.PORT || 3001;
 
 const allowedOrigins = [
     "https://your-react-app.vercel.app"
@@ -28,7 +29,6 @@ app.use(cors({ origin: (origin, callback)=>{
 }));
 
 const JWT_PASSWORD = process.env.JWT_PASSWORD || '';
-
 
 app.post('/api/v1/signup', async (req, res) => {
     //Todo : Zod validation, hash the password, handling error codes
@@ -213,4 +213,6 @@ app.get('/api/v1/brain/:sharelink', async (req, res) => {
 
 })
 
-app.listen(3001);
+app.listen(PORT,()=>{
+    console.log(`Server is running on port ${PORT}`);
+});
